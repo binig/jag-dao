@@ -134,9 +134,9 @@
 		</notifiers>
 	</ciManagement>
 	<scm>
-		<connection>scm:svn:http://svn.bin2.org/projects/commondao/trunk</connection>
-		<developerConnection>scm:svn:http://svn.bin2.org/projects/commondao/trunk</developerConnection>
-		<url>http://svn.bin2.org/projects/commondao/trunk</url>
+		<connection>scm:svn:http://jag-dao.googlecode.com/svn/trunk</connection>
+		<developerConnection>scm:svn:https://jag-dao.googlecode.com/svn/trunk</developerConnection>
+		<url>http://jag-dao.googlecode.com/svn/trunk</url>
 	</scm>
 
 
