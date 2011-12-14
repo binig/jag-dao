@@ -3,7 +3,7 @@
 	<groupId>org.bin2</groupId>
 	<artifactId>common-dao</artifactId>
 	<packaging>jar</packaging>
-	<version>0.8</version>
+	<version>0.9-SNAPSHOT</version>
 	<name>common-dao</name>
 	<url>http://site.maven.bin2.org</url>
 	<properties>
@@ -134,9 +134,9 @@
 		</notifiers>
 	</ciManagement>
 	<scm>
-		<connection>scm:svn:http://jag-dao.googlecode.com/svn/tags/0.8</connection>
-		<developerConnection>scm:svn:https://jag-dao.googlecode.com/svn/tags/0.8</developerConnection>
-		<url>http://jag-dao.googlecode.com/svn/tags/0.8</url>
+		<connection>scm:svn:http://jag-dao.googlecode.com/svn/trunk</connection>
+		<developerConnection>scm:svn:https://jag-dao.googlecode.com/svn/trunk</developerConnection>
+		<url>http://jag-dao.googlecode.com/svn/trunk</url>
 	</scm>
 
 
