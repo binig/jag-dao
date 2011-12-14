@@ -146,7 +146,7 @@
 			<uniqueVersion>false</uniqueVersion>
 			<id>bin2Repo</id>
 			<name>bin2 repository</name>
-			<url>dav:http://bin2.org/archiva/repository/internal</url>
+			<url>dav:http://bin2.org/archiva/repository/publicRelease</url>
 			<layout>default</layout>
 		</repository>
 		<snapshotRepository>
