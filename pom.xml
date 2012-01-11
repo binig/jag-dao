@@ -1,10 +1,10 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.bin2</groupId>
-	<artifactId>common-dao</artifactId>
+	<artifactId>jag-dao</artifactId>
 	<packaging>jar</packaging>
 	<version>0.9-SNAPSHOT</version>
-	<name>common-dao</name>
+	<name>jag-dao</name>
 	<url>http://site.maven.bin2.org</url>
 	<properties>
 		<spring.version>3.0.5.RELEASE</spring.version>
