@@ -1,4 +1,4 @@
-package org.bin2.common.dao;
+package org.bin2.jag.dao;
 
 import java.io.Serializable;
 import java.lang.annotation.Annotation;
@@ -41,8 +41,8 @@ public class DaoProxyHandler implements InvocationHandler {
 		final StringBuffer queryName = new StringBuffer(this.daoClass
 				.getSimpleName());
 		queryName.append(".").append(m.getName());
-		final org.bin2.common.dao.Query q = m
-				.getAnnotation(org.bin2.common.dao.Query.class);
+		final org.bin2.jag.dao.Query q = m
+				.getAnnotation(org.bin2.jag.dao.Query.class);
 
 		final Query query = q != null ? this.sessionFactory.getCurrentSession()
 				.createQuery(q.value()) : this.sessionFactory

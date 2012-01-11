@@ -1,4 +1,4 @@
-package org.bin2.common.dao;
+package org.bin2.jag.dao;
 
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
