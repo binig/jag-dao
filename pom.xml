@@ -3,7 +3,7 @@
 	<groupId>org.bin2</groupId>
 	<artifactId>jag-dao</artifactId>
 	<packaging>jar</packaging>
-	<version>0.9</version>
+	<version>0.10-SNAPSHOT</version>
 	<name>jag-dao</name>
 	<url>http://site.maven.bin2.org</url>
 	<properties>
@@ -134,9 +134,9 @@
 		</notifiers>
 	</ciManagement>
 	<scm>
-		<connection>scm:svn:http://jag-dao.googlecode.com/svn/tags/jag-dao-0.9</connection>
-		<developerConnection>scm:svn:https://jag-dao.googlecode.com/svn/tags/jag-dao-0.9</developerConnection>
-		<url>http://jag-dao.googlecode.com/svn/tags/jag-dao-0.9</url>
+		<connection>scm:svn:http://jag-dao.googlecode.com/svn/trunk</connection>
+		<developerConnection>scm:svn:https://jag-dao.googlecode.com/svn/trunk</developerConnection>
+		<url>http://jag-dao.googlecode.com/svn/trunk</url>
 	</scm>
 
 
