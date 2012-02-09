@@ -1,7 +1,6 @@
 package org.bin2.jag.dao.query;
 
 import org.hibernate.Query;
-import org.hibernate.Session;
 
 public class NamedParameterHandler implements ParameterHandler {
     private final String name;
@@ -9,8 +8,8 @@ public class NamedParameterHandler implements ParameterHandler {
     public NamedParameterHandler(String name) {
         this.name = name;
     }
-    
+
     public void proceedParameter(Query query, Object param) {
-        query.setParameter(name,param);
+        query.setParameter(name, param);
     }
 }

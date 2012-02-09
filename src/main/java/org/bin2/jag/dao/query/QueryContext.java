@@ -6,22 +6,22 @@ public class QueryContext {
     private final QueryHandler queryHandler;
     private final ResultHandler resultHandler;
     private final List<ParameterHandler> parameterHandlers;
-   
-    public QueryContext(QueryHandler queryHandler,ResultHandler resultHandler,List<ParameterHandler> parameterHandlers) {
-        this.queryHandler=  queryHandler;
-        this.resultHandler= resultHandler;
+
+    public QueryContext(QueryHandler queryHandler, ResultHandler resultHandler, List<ParameterHandler> parameterHandlers) {
+        this.queryHandler = queryHandler;
+        this.resultHandler = resultHandler;
         this.parameterHandlers = parameterHandlers;
     }
 
     public QueryHandler getQueryHandler() {
-       return queryHandler;
-    }
-    
-    public ResultHandler getResultHandler() {
-       return resultHandler;
+        return queryHandler;
     }
 
-    public List<ParameterHandler>  getParameterHandlers() {
-       return parameterHandlers;
+    public ResultHandler getResultHandler() {
+        return resultHandler;
+    }
+
+    public List<ParameterHandler> getParameterHandlers() {
+        return parameterHandlers;
     }
 }

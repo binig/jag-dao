@@ -4,6 +4,6 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 public interface QueryHandler {
-   
-	Query getQuery(Session session);
+
+    Query getQuery(Session session);
 }
