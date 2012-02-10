@@ -16,10 +16,22 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Spring FactoryBean used to build the Dao for the interface specified 
+ * <ul>
+ *   <li> sessionFactory property is mandatory
+ *   <li> dao class property is mandatory
+ *   <li> persitentClass is optional, if none is provided :
+ *        the factoryBean try to 
+ *        compute it automatically by getting the type specified on the Dao (User for
+ *        the previous example). If no persistent class is set and it cannot
+ *        automatically fetch the type the factory will throw an exception.
+ * </ul>
+ **/
 public class DaoBeanFactory implements FactoryBean<Dao<?, ?>> {
     private boolean singleton;
     /**
-     * the dao class to implements
+     * the dao class to implement
      */
     private Class<? extends Dao<?, ? extends Serializable>> dao;
 
@@ -34,6 +46,9 @@ public class DaoBeanFactory implements FactoryBean<Dao<?, ?>> {
      */
     private SessionFactory sessionFactory;
 
+    /**
+     * @return the dao class to implement
+     **/
     public Class<? extends Dao<?, ? extends Serializable>> getDao() {
         return this.dao;
     }
@@ -83,7 +98,6 @@ public class DaoBeanFactory implements FactoryBean<Dao<?, ?>> {
 
         List<ParameterHandler> parameterHandlers = Lists.newArrayList();
         final Annotation[][] annotations = m.getParameterAnnotations();
-        int idxCmpt = 0;
         for (int i = 0; i < annotations.length; i++) {
             final NamedParameter annot = getParameterAnnotation(annotations, i,
                     NamedParameter.class);
@@ -95,10 +109,10 @@ public class DaoBeanFactory implements FactoryBean<Dao<?, ?>> {
             } else if (getParameterAnnotation(annotations, i, FirstResult.class) != null) {
                 parameterHandler = new FirstResultParameterHandler();
             } else {
-                //  parameterHandler= new IndexedParameterHandler(idxCmpt);
-                idxCmpt++;
+                // IndexedParam not implemented ... maybe latter if i find a good strategy ....
+                //  parameterHandler= new IndexedParameterHandler(i);
             }
-            parameterHandlers.add(parameterHandler);
+            parameterHandlers.add(parameterHandler==null?NoActionParameterHandler.INSTANCE:parameterHandler);
         }
         return new QueryContext(queryHandler, result, parameterHandlers);
 
@@ -131,6 +145,9 @@ public class DaoBeanFactory implements FactoryBean<Dao<?, ?>> {
         return this.dao;
     }
 
+    /**
+     * @return the sessionFactory used for the created Dao
+     **/
     public SessionFactory getSessionFactory() {
         return this.sessionFactory;
     }
@@ -140,18 +157,36 @@ public class DaoBeanFactory implements FactoryBean<Dao<?, ?>> {
         return this.singleton;
     }
 
+    /**
+     * @param dao the dao class to implement
+     **/
     public void setDao(final Class<? extends Dao<?, ? extends Serializable>> dao) {
         this.dao = dao;
     }
 
+    /**
+     * the persistent clas managed by the created Dao 
+     * for a <code>UserDao<User, Long></code> it would be <code>User</code>,
+     * the property is optionnal, if not provided the factoryBean try to 
+     * compute it automatically by getting the type specified on the Dao (User for
+     * the previous example). If no persistent class is set and it cannot
+     * automatically fetch the type the factory will throw an exception.
+     * @param persistentClass the persistent clas managed by the created Dao
+     **/
     public void setPersistent(final Class<?> persistentClass) {
         this.persistentClass = persistentClass;
     }
 
+    /**
+     * @param sessionFactory the sessionFactory used by the dao
+     **/
     public void setSessionFactory(final SessionFactory sessionFactory) {
         this.sessionFactory = sessionFactory;
     }
 
+    /**
+     * @param singleton true to have a singleton @see #isSingleton()
+     **/
     public void setSingleton(final boolean singleton) {
         this.singleton = singleton;
     }

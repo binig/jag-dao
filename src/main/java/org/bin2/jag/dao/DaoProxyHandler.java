@@ -13,7 +13,11 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.util.Map;
 
-
+/**
+ * Invocation handler of the Dao interface
+ * @see Dao
+ * @see DaoBeanFactory 
+ **/
 public class DaoProxyHandler implements InvocationHandler {
     private static final Logger LOGGER = LoggerFactory
             .getLogger(DaoProxyHandler.class);
@@ -22,6 +26,16 @@ public class DaoProxyHandler implements InvocationHandler {
     private final Class<?> persistentClass;
     private final Map<Method, QueryContext> queryContexts;
 
+    /**
+     * The invocation handler for the proxy of the dao interface
+     * @see DaoBeanFactory
+     * @see Dao
+     * @param sessionFactory the sessionFactory the query will be done on
+     * @param daoClass the daoClass interfaces to implement
+     * @param persistentClass the persited class manage by the daoClass
+     * @param queryContexts one context by method, the context define the handlers to manage the parameters,
+     *               to build the query and the result object
+     **/
     public DaoProxyHandler(final SessionFactory sessionFactory,
                            final Class<?> daoClass, final Class<?> persistentClass, Map<Method, QueryContext> queryContexts) {
         super();
@@ -31,18 +45,30 @@ public class DaoProxyHandler implements InvocationHandler {
         this.queryContexts = ImmutableMap.copyOf(queryContexts);
     }
 
-
+    /**
+     * @param o object to persist
+     * @see org.hibernate.Session#save
+     **/
     public void create(final Object o) {
         this.sessionFactory.getCurrentSession().save(o);
 
     }
 
+    /**
+     * @param o object to delete
+     * @see org.hibernate.Session#delete
+     **/
     public void delete(final Object o) {
         this.sessionFactory.getCurrentSession().delete(o);
 
     }
 
 
+    /**
+     * @param m method the dao interface
+     * @param args parameters put through the method
+     * @return the query result type (List/Iterator/Object) according to the method return type
+     **/
     public Object executeNamedQuery(final Method m, final Object[] args) {
         QueryContext ctx = this.queryContexts.get(m);
         Query query = ctx.getQueryHandler().getQuery(this.sessionFactory.getCurrentSession());
@@ -77,6 +103,11 @@ public class DaoProxyHandler implements InvocationHandler {
         return result;
     }
 
+ 
+    /**
+     * @param id id of the object to load
+     * @see org.hibernate.Session#load
+     **/
     public Object load(final Serializable id) {
         return this.sessionFactory.getCurrentSession().load(
                 this.persistentClass, id);
