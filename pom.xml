@@ -6,7 +6,7 @@
     <packaging>jar</packaging>
     <version>0.10-SNAPSHOT</version>
     <name>jag-dao</name>
-    <url>http://site.maven.bin2.org</url>
+    <url>http://code.google.com/p/jag-dao/</url>
     <properties>
         <spring.version>3.0.5.RELEASE</spring.version>
     </properties>
@@ -125,6 +125,7 @@
     </reporting>
     <ciManagement>
         <system>jenkins</system>
+	<url>http://bin2.org/jenkins</url>
         <notifiers>
             <notifier>
                 <type>mail</type>
@@ -176,7 +177,14 @@
               <layout>default</layout> </pluginRepository -->
     </pluginRepositories>
 
-
+	<licenses>
+	  <license>
+	    <name>Apache 2</name>
+	    <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+	    <distribution>repo</distribution>
+	    <comments>A business-friendly OSS license</comments>
+	  </license>
+	</licenses>
     <organization>
         <name>bin2.org</name>
         <url>http://bin2.org</url>
