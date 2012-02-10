@@ -1,19 +1,16 @@
 package org.bin2.jag.dao;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import org.bin2.jag.dao.query.*;
+import com.google.common.collect.ImmutableMap;
+import org.bin2.jag.dao.query.ParameterHandler;
+import org.bin2.jag.dao.query.QueryContext;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 
@@ -26,21 +23,14 @@ public class DaoProxyHandler implements InvocationHandler {
     private final Map<Method, QueryContext> queryContexts;
 
     public DaoProxyHandler(final SessionFactory sessionFactory,
-                           final Class<?> daoClass, final Class<?> persistentClass) {
+                           final Class<?> daoClass, final Class<?> persistentClass, Map<Method, QueryContext> queryContexts) {
         super();
         this.sessionFactory = sessionFactory;
         this.daoClass = daoClass;
         this.persistentClass = persistentClass;
-        this.queryContexts = buildQueryContexts(daoClass);
+        this.queryContexts = ImmutableMap.copyOf(queryContexts);
     }
 
-    private Map<Method, QueryContext> buildQueryContexts(Class<?> daoClass) {
-        Map<Method, QueryContext> contexts = Maps.newHashMap();
-        for (Method m : daoClass.getMethods()) {
-            contexts.put(m, buildContextForMethod(m));
-        }
-        return contexts;
-    }
 
     public void create(final Object o) {
         this.sessionFactory.getCurrentSession().save(o);
@@ -52,50 +42,6 @@ public class DaoProxyHandler implements InvocationHandler {
 
     }
 
-    private QueryContext buildContextForMethod(Method m) {
-        final StringBuffer queryName = new StringBuffer(this.daoClass
-                .getSimpleName());
-        queryName.append(".").append(m.getName());
-        final org.bin2.jag.dao.Query q = m
-                .getAnnotation(org.bin2.jag.dao.Query.class);
-        final QueryHandler queryHandler;
-        if (q == null) {
-            queryHandler = new NamedQueryHandler(queryName.toString());
-        } else {
-            queryHandler = new BasicQueryHandler(q.value());
-        }
-
-        final ResultHandler result;
-        if (m.getReturnType().isAssignableFrom(List.class)) {
-            result = new ListResultHandler();
-        } else if (m.getReturnType().isAssignableFrom(Iterator.class)) {
-            result = new IteratorResultHandler();
-        } else {
-            result = new UniqueResultHandler();
-        }
-
-        List<ParameterHandler> parameterHandlers = Lists.newArrayList();
-        final Annotation[][] annotations = m.getParameterAnnotations();
-        int idxCmpt = 0;
-        for (int i = 0; i < annotations.length; i++) {
-            final NamedParameter annot = getParameterAnnotation(annotations, i,
-                    NamedParameter.class);
-            ParameterHandler parameterHandler = null;
-            if (annot != null) {
-                parameterHandler = new NamedParameterHandler(annot.value());
-            } else if (getParameterAnnotation(annotations, i, FetchSize.class) != null) {
-                parameterHandler = new FetchSizeParameterHandler();
-            } else if (getParameterAnnotation(annotations, i, FirstResult.class) != null) {
-                parameterHandler = new FirstResultParameterHandler();
-            } else {
-                //  parameterHandler= new IndexedParameterHandler(idxCmpt);
-                idxCmpt++;
-            }
-            parameterHandlers.add(parameterHandler);
-        }
-        return new QueryContext(queryHandler, result, parameterHandlers);
-
-    }
 
     public Object executeNamedQuery(final Method m, final Object[] args) {
         QueryContext ctx = this.queryContexts.get(m);
@@ -109,27 +55,6 @@ public class DaoProxyHandler implements InvocationHandler {
         return ctx.getResultHandler().result(query);
     }
 
-    private <T extends Annotation> T getParameterAnnotation(
-            final Annotation[][] annots, final int i, final Class<T> annoClass) {
-        final T p;
-        if (i < annots.length && annots[i] != null) {
-            T found = null;
-            for (final Annotation a : annots[i]) {
-                if (a.annotationType().isAssignableFrom(annoClass)) {
-                    found = annoClass.cast(a);
-                }
-            }
-            if (found != null) {
-                p = found;
-            } else {
-                p = null;
-            }
-        } else {
-            p = null;
-        }
-
-        return p;
-    }
 
     @Override
     public Object invoke(final Object o, final Method m, final Object[] args)
