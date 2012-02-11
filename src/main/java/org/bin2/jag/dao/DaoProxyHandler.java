@@ -1,12 +1,9 @@
 package org.bin2.jag.dao;
 
 import com.google.common.collect.ImmutableMap;
-import org.bin2.jag.dao.query.ParameterHandler;
 import org.bin2.jag.dao.query.QueryContext;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationHandler;
@@ -15,12 +12,12 @@ import java.util.Map;
 
 /**
  * Invocation handler of the Dao interface
+ *
  * @see Dao
- * @see DaoBeanFactory 
- **/
+ * @see DaoBeanFactory
+ */
 public class DaoProxyHandler implements InvocationHandler {
-    private static final Logger LOGGER = LoggerFactory
-            .getLogger(DaoProxyHandler.class);
+
     private final SessionFactory sessionFactory;
     private final Class<?> daoClass;
     private final Class<?> persistentClass;
@@ -28,14 +25,15 @@ public class DaoProxyHandler implements InvocationHandler {
 
     /**
      * The invocation handler for the proxy of the dao interface
+     *
+     * @param sessionFactory  the sessionFactory the query will be done on
+     * @param daoClass        the daoClass interfaces to implement
+     * @param persistentClass the persited class manage by the daoClass
+     * @param queryContexts   one context by method, the context define the handlers to manage the parameters,
+     *                        to build the query and the result object
      * @see DaoBeanFactory
      * @see Dao
-     * @param sessionFactory the sessionFactory the query will be done on
-     * @param daoClass the daoClass interfaces to implement
-     * @param persistentClass the persited class manage by the daoClass
-     * @param queryContexts one context by method, the context define the handlers to manage the parameters,
-     *               to build the query and the result object
-     **/
+     */
     public DaoProxyHandler(final SessionFactory sessionFactory,
                            final Class<?> daoClass, final Class<?> persistentClass, Map<Method, QueryContext> queryContexts) {
         super();
@@ -48,7 +46,7 @@ public class DaoProxyHandler implements InvocationHandler {
     /**
      * @param o object to persist
      * @see org.hibernate.Session#save
-     **/
+     */
     public void create(final Object o) {
         this.sessionFactory.getCurrentSession().save(o);
 
@@ -57,7 +55,7 @@ public class DaoProxyHandler implements InvocationHandler {
     /**
      * @param o object to delete
      * @see org.hibernate.Session#delete
-     **/
+     */
     public void delete(final Object o) {
         this.sessionFactory.getCurrentSession().delete(o);
 
@@ -65,10 +63,10 @@ public class DaoProxyHandler implements InvocationHandler {
 
 
     /**
-     * @param m method the dao interface
+     * @param m    method the dao interface
      * @param args parameters put through the method
      * @return the query result type (List/Iterator/Object) according to the method return type
-     **/
+     */
     public Object executeNamedQuery(final Method m, final Object[] args) {
         QueryContext ctx = this.queryContexts.get(m);
         Query query = ctx.getQueryHandler().getQuery(this.sessionFactory.getCurrentSession());
@@ -100,11 +98,12 @@ public class DaoProxyHandler implements InvocationHandler {
         return result;
     }
 
- 
+
     /**
      * @param id id of the object to load
+     * @return the loaded object
      * @see org.hibernate.Session#load
-     **/
+     */
     public Object load(final Serializable id) {
         return this.sessionFactory.getCurrentSession().load(
                 this.persistentClass, id);
