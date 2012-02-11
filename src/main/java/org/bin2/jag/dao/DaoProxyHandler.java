@@ -73,10 +73,7 @@ public class DaoProxyHandler implements InvocationHandler {
         QueryContext ctx = this.queryContexts.get(m);
         Query query = ctx.getQueryHandler().getQuery(this.sessionFactory.getCurrentSession());
         for (int i = 0; args != null && i < args.length; i++) {
-            ParameterHandler ph = ctx.getParameterHandlers().get(i);
-            if (ph != null) {
-                ph.proceedParameter(query, args[i]);
-            }
+            ctx.getParameterHandlers().get(i).proceedParameter(query, args[i]);
         }
         return ctx.getResultHandler().result(query);
     }

@@ -1,5 +1,6 @@
 package org.bin2.jag.dao;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.List;
@@ -35,6 +36,18 @@ public class DaoBeanFactoryTest {
 	public void tearDown() {
 		this.context.assertIsSatisfied();
 	}
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void testNoPersistentType() throws Exception {
+        daoBeanFactory.setDao((Class<? extends Dao<?, ? extends Serializable>>) Class.forName(TestNoPersistentDao.class.getName()));
+        daoBeanFactory.getObject();
+    }
+
+    @Test(expectedExceptions = IllegalArgumentException.class)
+    public void testNoDaoType() throws Exception {
+        daoBeanFactory.setDao((Class<? extends Dao<?, ? extends Serializable>>) Class.forName(BigDecimal.class.getName()));
+        daoBeanFactory.getObject();
+    }
 
 	@Test
 	public void testTargetDetect() throws Exception {

@@ -1,5 +1,6 @@
 package org.bin2.jag.dao;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.bin2.jag.dao.query.*;
@@ -121,18 +122,14 @@ public class DaoBeanFactory implements FactoryBean<Dao<?, ?>> {
     private <T extends Annotation> T getParameterAnnotation(
             final Annotation[][] annots, final int i, final Class<T> annoClass) {
         final T p;
-        if (i < annots.length && annots[i] != null) {
-            T found = null;
-            for (final Annotation a : annots[i]) {
-                if (a.annotationType().isAssignableFrom(annoClass)) {
-                    found = annoClass.cast(a);
-                }
+        T found = null;
+        for (final Annotation a : annots[i]) {
+            if (a.annotationType().isAssignableFrom(annoClass)) {
+                found = annoClass.cast(a);
             }
-            if (found != null) {
-                p = found;
-            } else {
-                p = null;
-            }
+        }
+        if (found != null) {
+            p = found;
         } else {
             p = null;
         }
@@ -192,23 +189,23 @@ public class DaoBeanFactory implements FactoryBean<Dao<?, ?>> {
     }
 
     private void tryingExtractPersistentType() {
+        Preconditions.checkArgument(Dao.class.isAssignableFrom(dao),"cannot proxy a non Dao interface "+ dao.getName());
         // try to detect the type of the dao
         final Type[] types = dao.getGenericInterfaces();
-        if (types != null) {
-            for (final Type type : dao.getGenericInterfaces()) {
-                if (type instanceof ParameterizedType) {
-                    final ParameterizedType p = (ParameterizedType) type;
-                    final Class<?> rtype = (Class<?>) p.getRawType();
-                    if (Dao.class.isAssignableFrom(rtype)) {
-                        this.persistentClass = (Class<?>) p.getActualTypeArguments()[0];
-                        break;
+        for (final Type type : dao.getGenericInterfaces()) {
+            if (type instanceof ParameterizedType) {
+                final ParameterizedType p = (ParameterizedType) type;
+                final Class<?> rtype = (Class<?>) p.getRawType();
+                if (Dao.class.isAssignableFrom(rtype)) {
+                    Type t = p.getActualTypeArguments()[0];
+                    if (t instanceof Class) {
+                        this.persistentClass = (Class<?>) t;
+                    }  else {
+                        throw new IllegalArgumentException("cannot automatically resolve persistentClass, please set the property manually, type not define "+ t);
                     }
+                    break;
                 }
             }
         }
-        if (this.persistentClass == null) {
-            throw new RuntimeException("cannot automatically resolve persistentClass, please set the property manually");
-        }
     }
-
 }
