@@ -76,18 +76,50 @@ public class DaoBeanFactory implements FactoryBean<Dao<?, ?>> {
     }
 
     private QueryContext buildContextForMethod(Method m, Class<?> daoClass) {
+        final QueryHandler queryHandler = buildQueryHandler(m, daoClass);
+        final ResultHandler result = buildResultHandler(m);
+        List<ParameterHandler> parameterHandlers = Lists.newArrayList();
+        final Annotation[][] annotations = m.getParameterAnnotations();
+        for (int i = 0; i < annotations.length; i++) {
+            parameterHandlers.add(buildParameterHandler(annotations[i]));
+        }
+        return new QueryContext(queryHandler, result, parameterHandlers);
+
+    }
+
+    private ParameterHandler buildParameterHandler(Annotation[] annotations) {
+        final NamedParameter annot = getParameterAnnotation(annotations,
+                NamedParameter.class);
+        ParameterHandler parameterHandler = null;
+        if (annot != null) {
+            parameterHandler = new NamedParameterHandler(annot.value());
+        } else if (getParameterAnnotation(annotations, FetchSize.class) != null) {
+            parameterHandler = new FetchSizeParameterHandler();
+        } else if (getParameterAnnotation(annotations, FirstResult.class) != null) {
+            parameterHandler = new FirstResultParameterHandler();
+        } else {
+            // IndexedParam not implemented ... maybe latter if i find a good strategy ....
+            //  parameterHandler= new IndexedParameterHandler(i);
+        }
+        return parameterHandler==null?NoActionParameterHandler.INSTANCE:parameterHandler;
+    }
+
+    private QueryHandler buildQueryHandler(Method m, Class<?> daoClass) {
         final StringBuilder queryName = new StringBuilder(daoClass
                 .getSimpleName());
         queryName.append(".").append(m.getName());
-        final org.bin2.jag.dao.Query q = m
-                .getAnnotation(org.bin2.jag.dao.Query.class);
+        final Query q = m
+                .getAnnotation(Query.class);
         final QueryHandler queryHandler;
         if (q == null) {
             queryHandler = new NamedQueryHandler(queryName.toString());
         } else {
             queryHandler = new BasicQueryHandler(q.value());
         }
+        return queryHandler;
+    }
 
+    private ResultHandler buildResultHandler(Method m) {
         final ResultHandler result;
         if (m.getReturnType().isAssignableFrom(List.class)) {
             result = new ListResultHandler();
@@ -96,34 +128,14 @@ public class DaoBeanFactory implements FactoryBean<Dao<?, ?>> {
         } else {
             result = new UniqueResultHandler();
         }
-
-        List<ParameterHandler> parameterHandlers = Lists.newArrayList();
-        final Annotation[][] annotations = m.getParameterAnnotations();
-        for (int i = 0; i < annotations.length; i++) {
-            final NamedParameter annot = getParameterAnnotation(annotations, i,
-                    NamedParameter.class);
-            ParameterHandler parameterHandler = null;
-            if (annot != null) {
-                parameterHandler = new NamedParameterHandler(annot.value());
-            } else if (getParameterAnnotation(annotations, i, FetchSize.class) != null) {
-                parameterHandler = new FetchSizeParameterHandler();
-            } else if (getParameterAnnotation(annotations, i, FirstResult.class) != null) {
-                parameterHandler = new FirstResultParameterHandler();
-            } else {
-                // IndexedParam not implemented ... maybe latter if i find a good strategy ....
-                //  parameterHandler= new IndexedParameterHandler(i);
-            }
-            parameterHandlers.add(parameterHandler==null?NoActionParameterHandler.INSTANCE:parameterHandler);
-        }
-        return new QueryContext(queryHandler, result, parameterHandlers);
-
+        return result;
     }
 
     private <T extends Annotation> T getParameterAnnotation(
-            final Annotation[][] annots, final int i, final Class<T> annoClass) {
+            final Annotation[] annots,  final Class<T> annoClass) {
         final T p;
         T found = null;
-        for (final Annotation a : annots[i]) {
+        for (final Annotation a : annots) {
             if (a.annotationType().isAssignableFrom(annoClass)) {
                 found = annoClass.cast(a);
             }
