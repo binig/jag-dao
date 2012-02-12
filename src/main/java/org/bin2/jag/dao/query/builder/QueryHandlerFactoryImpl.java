@@ -22,7 +22,6 @@ public class QueryHandlerFactoryImpl implements QueryHandlerFactory<Query> {
      */
     public QueryHandler build(@Nullable Query annotation, Class<? extends Dao> daoClass, Method method) {
         Preconditions.checkNotNull(annotation);
-        Preconditions.checkNotNull(annotation.value());
         return new BasicQueryHandler(annotation.value());
     }
 }

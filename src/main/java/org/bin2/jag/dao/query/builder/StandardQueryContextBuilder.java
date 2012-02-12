@@ -20,6 +20,8 @@ public class StandardQueryContextBuilder implements QueryContextBuilder {
     private final Map<Class<? extends Annotation>, QueryHandlerFactory> queryHandlerFactoryMap;
     private final QueryHandlerFactory<?> noQueryAnnotationFactory;
 
+    private final Map<Class<? extends Annotation>, ParameterHandlerFactory> parameterHandlerFactoryMap;
+
     /**
      * build a default QueryContextBuilder with standard handlerFactories,
      * it manage the following annotations by default
@@ -51,6 +53,10 @@ public class StandardQueryContextBuilder implements QueryContextBuilder {
         queryHandlerFactoryMap.put(Query.class, new QueryHandlerFactoryImpl());
         noQueryAnnotationFactory = new NamedQueryHandlerFactoryImpl();
         queryHandlerFactoryMap.put(NamedQuery.class, noQueryAnnotationFactory);
+        parameterHandlerFactoryMap = Maps.newHashMap();
+        parameterHandlerFactoryMap.put(NamedParameter.class, new NamedParameterHandlerFactory());
+        parameterHandlerFactoryMap.put(FirstResult.class, new FirstResultParameterHandlerFactory());
+        parameterHandlerFactoryMap.put(FetchSize.class, new FetchSizeParameterHandlerFactory());
     }
 
     public Map<Method, QueryContext> buildQueryContexts(Class<? extends Dao> daoClass) {
@@ -67,27 +73,21 @@ public class StandardQueryContextBuilder implements QueryContextBuilder {
         List<ParameterHandler> parameterHandlers = Lists.newArrayList();
         final Annotation[][] annotations = m.getParameterAnnotations();
         for (int i = 0; i < annotations.length; i++) {
-            parameterHandlers.add(buildParameterHandler(annotations[i]));
+            parameterHandlers.add(buildParameterHandler(annotations[i], m, daoClass, i));
         }
         return new QueryContext(queryHandler, result, parameterHandlers);
 
     }
 
-    private ParameterHandler buildParameterHandler(Annotation[] annotations) {
-        final NamedParameter annot = getParameterAnnotation(annotations,
-                NamedParameter.class);
+    private ParameterHandler buildParameterHandler(Annotation[] annotations, Method m, Class<? extends Dao> daoClass, int idx) {
         ParameterHandler parameterHandler = null;
-        if (annot != null) {
-            parameterHandler = new NamedParameterHandler(annot.value());
-        } else if (getParameterAnnotation(annotations, FetchSize.class) != null) {
-            parameterHandler = new FetchSizeParameterHandler();
-        } else if (getParameterAnnotation(annotations, FirstResult.class) != null) {
-            parameterHandler = new FirstResultParameterHandler();
+        for (Map.Entry<Class<? extends Annotation>, ParameterHandlerFactory> entry : parameterHandlerFactoryMap.entrySet()) {
+            Annotation a = getParameterAnnotation(annotations, entry.getKey());
+            if (a != null) {
+                parameterHandler = entry.getValue().build(a, daoClass, m, idx);
+                break;
+            }
         }
-        //else {
-        // IndexedParam not implemented ... maybe latter if i find a good strategy ....
-        //  parameterHandler= new IndexedParameterHandler(i);
-        //}
         return parameterHandler == null ? NoActionParameterHandler.INSTANCE : parameterHandler;
     }
 

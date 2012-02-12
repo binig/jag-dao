@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
 /**
  * Manage the creation of the QueryHandler for a specific Annotation
  *
- * @param <T> the type of the annotation this handler manage
+ * @param <T> the type of the annotation this factory manage
  * @see StandardQueryContextBuilder
  * @see QueryContextBuilder
  */
