@@ -10,12 +10,16 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 
 /**
+ * Handle the {@see Query} annotation does not handle the no annotation case (NPE)
+ * build a {@see BasicQueryHandler} with the {@see Query#value}  as query string
+ *
  * @author broger
- *         Date: 12/02/12
- *         Time: 13:30
  */
 public class QueryHandlerFactoryImpl implements QueryHandlerFactory<Query> {
     @Override
+    /**
+     * @return {@see BasicQueryHandler} with the {@see Query#value} as query string
+     */
     public QueryHandler build(@Nullable Query annotation, Class<? extends Dao> daoClass, Method method) {
         Preconditions.checkNotNull(annotation);
         Preconditions.checkNotNull(annotation.value());

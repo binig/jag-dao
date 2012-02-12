@@ -9,9 +9,15 @@ import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 
 /**
+ * Handle the building of the QueryHandler for the NamedQuery annotation
+ * and for no annotation, if no annotation use the simpleName + "." + methodName
+ * as nameQuery name.
+ *
  * @author broger
- *         Date: 12/02/12
- *         Time: 13:24
+ * @see Class#getSimpleName()
+ * @see java.lang.reflect.Method#getName()
+ * @see NamedQuery
+ * @see NamedQueryHandler
  */
 public class NamedQueryHandlerFactoryImpl implements QueryHandlerFactory<NamedQuery> {
     @Override

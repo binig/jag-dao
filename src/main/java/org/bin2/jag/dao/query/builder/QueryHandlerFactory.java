@@ -8,10 +8,18 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
 /**
- * @author broger
- *         Date: 12/02/12
- *         Time: 13:20
+ * Manage the creation of the QueryHandler for a specific Annotation
+ *
+ * @param <T> the type of the annotation this handler manage
+ * @see StandardQueryContextBuilder
+ * @see QueryContextBuilder
  */
 public interface QueryHandlerFactory<T extends Annotation> {
+    /**
+     * @param annotation the method annotation
+     * @param daoClass   the dao class
+     * @param method     the method of the dao class
+     * @return the queryHandler that will manage the creation of the query for the method of the dao daoClass
+     */
     QueryHandler build(@Nullable T annotation, Class<? extends Dao> daoClass, Method method);
 }

@@ -10,9 +10,7 @@ import java.util.Map;
  * build a query context by extrating annotation information on the dao class
  * the build query context is used by the DaoProxyHandler to execute the query
  *
- * @author broger
- *         Date: 11/02/12
- *         Time: 18:34
+ * @author brogers
  * @see org.bin2.jag.dao.DaoProxyHandler
  * @see org.bin2.jag.dao.DaoBeanFactory#DaoBeanFactory(QueryContextBuilder)
  */

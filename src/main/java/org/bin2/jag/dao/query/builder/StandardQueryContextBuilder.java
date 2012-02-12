@@ -12,14 +12,40 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author broger
- *         Date: 11/02/12
- *         Time: 18:37
+ * standard and default queryContextBuilder
+ * use handlerFactory to build the context, a factory for an annotation, and a factory if no matching annotation found
+ * //TODO add comment on customization
  */
 public class StandardQueryContextBuilder implements QueryContextBuilder {
     private final Map<Class<? extends Annotation>, QueryHandlerFactory> queryHandlerFactoryMap;
     private final QueryHandlerFactory<?> noQueryAnnotationFactory;
 
+    /**
+     * build a default QueryContextBuilder with standard handlerFactories,
+     * it manage the following annotations by default
+     * <ul>
+     * <li>Query
+     * <ul>
+     * <li>{@see NamedQuery}</li>
+     * <li>{@see Query}</li>
+     * </ul>
+     * </li>
+     * <li>Parameters
+     * <ul>
+     * <li>{@see NamedParameter}</li>
+     * <li>{@see FetchSize}</li>
+     * <li>{@see FirstResult}</li>
+     * </ul>
+     * </li>
+     * <li>Result type managed
+     * <ul>
+     * <li>{@see List}</li>
+     * <li>{@see Iterator}</li>
+     * <li>{@see org.hibernate.Query#uniqueResult}</li>
+     * </ul>
+     * </li>
+     * </ul>
+     */
     public StandardQueryContextBuilder() {
         queryHandlerFactoryMap = Maps.newHashMap();
         queryHandlerFactoryMap.put(Query.class, new QueryHandlerFactoryImpl());
