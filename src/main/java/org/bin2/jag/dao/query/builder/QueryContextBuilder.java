@@ -1,5 +1,6 @@
 package org.bin2.jag.dao.query.builder;
 
+import org.bin2.jag.dao.Dao;
 import org.bin2.jag.dao.query.QueryContext;
 
 import java.lang.reflect.Method;
@@ -25,5 +26,5 @@ public interface QueryContextBuilder {
      * @see org.bin2.jag.dao.DaoProxyHandler
      * @see org.bin2.jag.dao.DaoBeanFactory#DaoBeanFactory(QueryContextBuilder)
      */
-    Map<Method, QueryContext> buildQueryContexts(Class<?> daoClass);
+    Map<Method, QueryContext> buildQueryContexts(Class<? extends Dao> daoClass);
 }

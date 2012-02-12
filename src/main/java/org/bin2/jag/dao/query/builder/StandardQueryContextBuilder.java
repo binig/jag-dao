@@ -2,10 +2,7 @@ package org.bin2.jag.dao.query.builder;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.bin2.jag.dao.FetchSize;
-import org.bin2.jag.dao.FirstResult;
-import org.bin2.jag.dao.NamedParameter;
-import org.bin2.jag.dao.Query;
+import org.bin2.jag.dao.*;
 import org.bin2.jag.dao.query.*;
 
 import java.lang.annotation.Annotation;
@@ -20,7 +17,17 @@ import java.util.Map;
  *         Time: 18:37
  */
 public class StandardQueryContextBuilder implements QueryContextBuilder {
-    public Map<Method, QueryContext> buildQueryContexts(Class<?> daoClass) {
+    private final Map<Class<? extends Annotation>, QueryHandlerFactory> queryHandlerFactoryMap;
+    private final QueryHandlerFactory<?> noQueryAnnotationFactory;
+
+    public StandardQueryContextBuilder() {
+        queryHandlerFactoryMap = Maps.newHashMap();
+        queryHandlerFactoryMap.put(Query.class, new QueryHandlerFactoryImpl());
+        noQueryAnnotationFactory = new NamedQueryHandlerFactoryImpl();
+        queryHandlerFactoryMap.put(NamedQuery.class, noQueryAnnotationFactory);
+    }
+
+    public Map<Method, QueryContext> buildQueryContexts(Class<? extends Dao> daoClass) {
         Map<Method, QueryContext> contexts = Maps.newHashMap();
         for (Method m : daoClass.getMethods()) {
             contexts.put(m, buildContextForMethod(m, daoClass));
@@ -28,7 +35,7 @@ public class StandardQueryContextBuilder implements QueryContextBuilder {
         return contexts;
     }
 
-    private QueryContext buildContextForMethod(Method m, Class<?> daoClass) {
+    private QueryContext buildContextForMethod(Method m, Class<? extends Dao> daoClass) {
         final QueryHandler queryHandler = buildQueryHandler(m, daoClass);
         final ResultHandler result = buildResultHandler(m);
         List<ParameterHandler> parameterHandlers = Lists.newArrayList();
@@ -58,19 +65,19 @@ public class StandardQueryContextBuilder implements QueryContextBuilder {
         return parameterHandler == null ? NoActionParameterHandler.INSTANCE : parameterHandler;
     }
 
-    private QueryHandler buildQueryHandler(Method m, Class<?> daoClass) {
-        final StringBuilder queryName = new StringBuilder(daoClass
-                .getSimpleName());
-        queryName.append(".").append(m.getName());
-        final Query q = m
-                .getAnnotation(Query.class);
-        final QueryHandler queryHandler;
-        if (q == null) {
-            queryHandler = new NamedQueryHandler(queryName.toString());
-        } else {
-            queryHandler = new BasicQueryHandler(q.value());
+    private QueryHandler buildQueryHandler(Method m, Class<? extends Dao> daoClass) {
+        QueryHandler h = null;
+        for (Map.Entry<Class<? extends Annotation>, QueryHandlerFactory> entry : queryHandlerFactoryMap.entrySet()) {
+            Annotation a = m.getAnnotation(entry.getKey());
+            if (a != null) {
+                h = entry.getValue().build(a, daoClass, m);
+                break;
+            }
         }
-        return queryHandler;
+        if (h == null) {
+            h = noQueryAnnotationFactory.build(null, daoClass, m);
+        }
+        return h;
     }
 
     private ResultHandler buildResultHandler(Method m) {
