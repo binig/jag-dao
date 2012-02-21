@@ -22,6 +22,10 @@ public class StandardQueryContextBuilder implements QueryContextBuilder {
 
     private final Map<Class<? extends Annotation>, ParameterHandlerFactory> parameterHandlerFactoryMap;
 
+
+    private final Map<Class<? extends Annotation>, ResultHandlerFactory> resultHandlerFactoryMap;
+    private final ResultHandlerFactory<?> noAnnotationResultHandlerFactory;
+
     /**
      * build a default QueryContextBuilder with standard handlerFactories,
      * it manage the following annotations by default
@@ -57,6 +61,8 @@ public class StandardQueryContextBuilder implements QueryContextBuilder {
         parameterHandlerFactoryMap.put(NamedParameter.class, new NamedParameterHandlerFactory());
         parameterHandlerFactoryMap.put(FirstResult.class, new FirstResultParameterHandlerFactory());
         parameterHandlerFactoryMap.put(FetchSize.class, new FetchSizeParameterHandlerFactory());
+        resultHandlerFactoryMap = Maps.newHashMap();
+        noAnnotationResultHandlerFactory = new StandardResultHandlerFactory();
     }
 
     public Map<Method, QueryContext> buildQueryContexts(Class<? extends Dao> daoClass) {
@@ -69,7 +75,7 @@ public class StandardQueryContextBuilder implements QueryContextBuilder {
 
     private QueryContext buildContextForMethod(Method m, Class<? extends Dao> daoClass) {
         final QueryHandler queryHandler = buildQueryHandler(m, daoClass);
-        final ResultHandler result = buildResultHandler(m);
+        final ResultHandler result = buildResultHandler(m, daoClass);
         List<ParameterHandler> parameterHandlers = Lists.newArrayList();
         final Annotation[][] annotations = m.getParameterAnnotations();
         for (int i = 0; i < annotations.length; i++) {
@@ -106,16 +112,19 @@ public class StandardQueryContextBuilder implements QueryContextBuilder {
         return h;
     }
 
-    private ResultHandler buildResultHandler(Method m) {
-        final ResultHandler result;
-        if (m.getReturnType().isAssignableFrom(List.class)) {
-            result = new ListResultHandler();
-        } else if (m.getReturnType().isAssignableFrom(Iterator.class)) {
-            result = new IteratorResultHandler();
-        } else {
-            result = new UniqueResultHandler();
+    private ResultHandler buildResultHandler(Method m, Class<? extends Dao> daoClass) {
+        ResultHandler h = null;
+        for (Map.Entry<Class<? extends Annotation>, ResultHandlerFactory> entry : resultHandlerFactoryMap.entrySet()) {
+            Annotation a = m.getAnnotation(entry.getKey());
+            if (a != null) {
+                h = entry.getValue().build(a, daoClass, m);
+                break;
+            }
         }
-        return result;
+        if (h == null) {
+            h = noAnnotationResultHandlerFactory.build(null, daoClass, m);
+        }
+        return h;
     }
 
     private <T extends Annotation> T getParameterAnnotation(
