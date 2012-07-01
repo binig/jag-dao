@@ -1,8 +1,8 @@
 package org.bin2.jag.dao;
 
 import com.google.common.collect.ImmutableList;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.classic.Session;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.testng.Assert;
