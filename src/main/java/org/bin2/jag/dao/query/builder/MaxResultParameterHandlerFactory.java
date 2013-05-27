@@ -6,18 +6,18 @@ import javax.annotation.Nullable;
 
 import org.bin2.jag.dao.Dao;
 import org.bin2.jag.dao.FetchSize;
-import org.bin2.jag.dao.query.FetchSizeParameterHandler;
+import org.bin2.jag.dao.query.MaxResultParameterHandler;
 import org.bin2.jag.dao.query.ParameterHandler;
 
 /**
- * Build a {@see MaxResultParameterHandler}
+ * Build a {@see FetchSizeParameterHandler}
  * 
  * @author broger
  */
-public class FetchSizeParameterHandlerFactory implements ParameterHandlerFactory<FetchSize> {
+public class MaxResultParameterHandlerFactory implements ParameterHandlerFactory<FetchSize> {
 
 	@Override
 	public ParameterHandler build(@Nullable final FetchSize annotation, final Class<? extends Dao> daoClass, final Method method, final int parameterIdx) {
-		return new FetchSizeParameterHandler();
+		return new MaxResultParameterHandler();
 	}
 }
