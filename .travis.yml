@@ -2,3 +2,7 @@ language: java
 
 jdk:
   - oraclejdk7
+
+after_success:
+  - mvn -P travis jacoco:report coveralls:jacoco
+

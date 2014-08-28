@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/binig/jag-dao.svg?branch=master)](https://travis-ci.org/binig/jag-dao)
+[![Coverage Status](https://img.shields.io/coveralls/binig/jag-dao.svg)](https://coveralls.io/r/binig/jag-dao)
+
 Jag-DAO
 ===
 Simple implementation of the Generic DAO pattern based on Interfaces annotation Spring and Hibernate
