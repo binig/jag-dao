@@ -2,7 +2,6 @@ Jag-DAO
 ===
 Simple implementation of the Generic DAO pattern based on Interfaces annotation Spring and Hibernate
 
-can be found on the repo http://bin2.org/archiva/repository/publicRelease/ and the maven site is available here http://jag-dao.bin2.org/
 
 add this dependency to your project
 
