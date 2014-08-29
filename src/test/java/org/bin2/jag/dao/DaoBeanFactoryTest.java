@@ -1,10 +1,14 @@
 package org.bin2.jag.dao;
 
 import com.google.common.collect.ImmutableList;
+import org.bin2.jag.dao.query.hibernate.HibernateInnerBaseDao;
+import org.bin2.jag.dao.query.hibernate.builder.HibernateQueryContextBuilder;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
+import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.ReflectionUtils;
 import org.testng.Assert;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
@@ -23,11 +27,12 @@ public class DaoBeanFactoryTest {
 
     @BeforeMethod
     public void setUp() {
-        this.daoBeanFactory = new DaoBeanFactory();
+        this.daoBeanFactory = new DaoBeanFactory(new HibernateQueryContextBuilder());
         this.context = new Mockery();
         this.sessionFactory = this.context.mock(SessionFactory.class);
         this.session = this.context.mock(Session.class);
-        this.daoBeanFactory.setSessionFactory(this.sessionFactory);
+        InnerBaseDao innerBaseDao = new HibernateInnerBaseDao(sessionFactory);
+        this.daoBeanFactory.setInnerBaseDao(innerBaseDao);
         this.daoBeanFactory.setDao(TestDao.class);
 
     }
@@ -74,7 +79,8 @@ public class DaoBeanFactoryTest {
 
         Assert.assertTrue(this.daoBeanFactory.getDao() == TestDao.class);
         Assert.assertTrue(this.daoBeanFactory.isSingleton() == false);
-        Assert.assertTrue(this.daoBeanFactory.getSessionFactory() == this.sessionFactory);
+        Object sf = ReflectionTestUtils.getField(ReflectionTestUtils.getField(daoBeanFactory,"innerBaseDao"),"sessionFactory");
+        Assert.assertTrue(sf == this.sessionFactory);
         this.daoBeanFactory.setSingleton(true);
         Assert.assertTrue(this.daoBeanFactory.isSingleton());
         Assert.assertTrue(this.daoBeanFactory.getObjectType() == TestDao.class);

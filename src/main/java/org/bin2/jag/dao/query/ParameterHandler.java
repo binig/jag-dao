@@ -10,12 +10,12 @@ import org.hibernate.Query;
  * @see org.bin2.jag.dao.DaoProxyHandler
  * @see org.bin2.jag.dao.DaoBeanFactory
  **/
-public interface ParameterHandler {
+public interface ParameterHandler<Q> {
 
     /**
      * proceed the method parameter
      * @param query the query to impact
      * @param param the method parameter
      **/
-    void proceedParameter(Query query, Object param);
+    void proceedParameter(Q query, Object param);
 }

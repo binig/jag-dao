@@ -10,12 +10,12 @@ import org.hibernate.Query;
  * @see org.bin2.jag.dao.DaoProxyHandler
  * @see org.bin2.jag.dao.DaoBeanFactory
  **/
-public interface ResultHandler<T> {
+public interface ResultHandler<Q,T> {
 
     /**
      * compute the result of the query
      * @param query the query to compute
      * @return the computed result
      **/
-    T result(Query query);
+    T result(Q query);
 }

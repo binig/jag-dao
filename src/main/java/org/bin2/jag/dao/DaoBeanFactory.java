@@ -2,7 +2,8 @@ package org.bin2.jag.dao;
 
 import com.google.common.base.Preconditions;
 import org.bin2.jag.dao.query.builder.QueryContextBuilder;
-import org.bin2.jag.dao.query.builder.StandardQueryContextBuilder;
+import org.bin2.jag.dao.query.hibernate.builder.HibernateQueryContextBuilder;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.FactoryBean;
 
@@ -25,47 +26,35 @@ import java.lang.reflect.Type;
  * it used the StandardQueryContextBuilder</li>
  * </ul>
  *
- * @see StandardQueryContextBuilder
+ * @see org.bin2.jag.dao.query.hibernate.builder.HibernateQueryContextBuilder
  * @see QueryContextBuilder
  */
-public class DaoBeanFactory implements FactoryBean<Dao<?, ?>> {
+public class DaoBeanFactory<Q,S,T,PK extends Serializable> implements FactoryBean<Dao<T, PK>> {
     private boolean singleton;
     /**
      * the dao class to implement
      */
-    private Class<? extends Dao<?, ? extends Serializable>> dao;
+    private Class<? extends Dao<T, PK>> dao;
 
     /**
      * optional persistentClass
      * if not provided will check the parametized type of the DAO
      */
-    private Class<?> persistentClass;
+    private Class<T> persistentClass;
 
-    /**
-     * the session factory
-     */
-    private SessionFactory sessionFactory;
 
     /**
      * query context builder
      */
-    private QueryContextBuilder queryContextBuilder;
+    private QueryContextBuilder<Q,S,T> queryContextBuilder;
+
+    private InnerBaseDao<T,PK,S> innerBaseDao;
 
     /**
      * @param queryContextBuilder the query context builder that extract query context from the dao class
      */
-    public DaoBeanFactory(QueryContextBuilder queryContextBuilder) {
+    public DaoBeanFactory(QueryContextBuilder<Q,S,T> queryContextBuilder) {
         this.queryContextBuilder = queryContextBuilder;
-    }
-
-    /**
-     * build a DaoBeanFactory with the default queryContextBuilder (  StandardQueryContextBuilder )
-     *
-     * @see QueryContextBuilder
-     * @see StandardQueryContextBuilder
-     */
-    public DaoBeanFactory() {
-        this(new StandardQueryContextBuilder());
     }
 
     /**
@@ -76,12 +65,13 @@ public class DaoBeanFactory implements FactoryBean<Dao<?, ?>> {
     }
 
     @Override
-    public Dao<?, ?> getObject() throws Exception {
+    public Dao<T, PK> getObject() throws Exception {
         if (this.persistentClass == null) {
             tryingExtractPersistentType();
         }
-        final DaoProxyHandler handler = new DaoProxyHandler(
-                this.sessionFactory, this.dao, this.persistentClass, queryContextBuilder.buildQueryContexts(dao));
+        innerBaseDao.setPersistentClass(persistentClass);
+        final DaoProxyHandler<Q,S,T,PK> handler = new DaoProxyHandler<Q,S,T,PK>(
+                this.innerBaseDao, this.dao, this.persistentClass, queryContextBuilder.buildQueryContexts(persistentClass,dao));
         return Dao.class
                 .cast(Proxy.newProxyInstance(Thread.currentThread()
                         .getContextClassLoader(), new Class<?>[]{this.dao},
@@ -94,12 +84,6 @@ public class DaoBeanFactory implements FactoryBean<Dao<?, ?>> {
         return this.dao;
     }
 
-    /**
-     * @return the sessionFactory used for the created Dao
-     */
-    public SessionFactory getSessionFactory() {
-        return this.sessionFactory;
-    }
 
     @Override
     public boolean isSingleton() {
@@ -109,7 +93,7 @@ public class DaoBeanFactory implements FactoryBean<Dao<?, ?>> {
     /**
      * @param dao the dao class to implement
      */
-    public void setDao(final Class<? extends Dao<?, ? extends Serializable>> dao) {
+    public void setDao(final Class<? extends Dao<T, PK>> dao) {
         this.dao = dao;
     }
 
@@ -123,15 +107,12 @@ public class DaoBeanFactory implements FactoryBean<Dao<?, ?>> {
      *
      * @param persistentClass the persistent clas managed by the created Dao
      */
-    public void setPersistent(final Class<?> persistentClass) {
+    public void setPersistent(final Class<T> persistentClass) {
         this.persistentClass = persistentClass;
     }
 
-    /**
-     * @param sessionFactory the sessionFactory used by the dao
-     */
-    public void setSessionFactory(final SessionFactory sessionFactory) {
-        this.sessionFactory = sessionFactory;
+    public void setInnerBaseDao(InnerBaseDao<T, PK, S> innerBaseDao) {
+        this.innerBaseDao = innerBaseDao;
     }
 
     /**
@@ -151,7 +132,7 @@ public class DaoBeanFactory implements FactoryBean<Dao<?, ?>> {
                 if (Dao.class.isAssignableFrom(rtype)) {
                     Type t = p.getActualTypeArguments()[0];
                     if (t instanceof Class) {
-                        this.persistentClass = (Class<?>) t;
+                        this.persistentClass = (Class<T>) t;
                     } else {
                         throw new IllegalArgumentException("cannot automatically resolve persistentClass, please set the property manually, type not define " + t);
                     }

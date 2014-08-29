@@ -11,8 +11,8 @@ import java.lang.reflect.Method;
  *
  * @param <T> the type of the annotation this factory manage
  * @author broger
- * @see StandardQueryContextBuilder
- * @see QueryContextBuilder
+ * @see org.bin2.jag.dao.query.hibernate.builder.HibernateQueryContextBuilder
+ * @see org.bin2.jag.dao.query.builder.QueryContextBuilder
  */
 public interface ResultHandlerFactory<T> {
     /**

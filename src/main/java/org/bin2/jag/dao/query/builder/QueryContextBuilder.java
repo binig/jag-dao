@@ -14,7 +14,7 @@ import java.util.Map;
  * @see org.bin2.jag.dao.DaoProxyHandler
  * @see org.bin2.jag.dao.DaoBeanFactory#DaoBeanFactory(QueryContextBuilder)
  */
-public interface QueryContextBuilder {
+public interface QueryContextBuilder<Q,S,T> {
     /**
      * build a query context by extrating annotation information on the dao class
      * the build query context is used by the DaoProxyHandler to execute the query
@@ -24,5 +24,5 @@ public interface QueryContextBuilder {
      * @see org.bin2.jag.dao.DaoProxyHandler
      * @see org.bin2.jag.dao.DaoBeanFactory#DaoBeanFactory(QueryContextBuilder)
      */
-    Map<Method, QueryContext> buildQueryContexts(Class<? extends Dao> daoClass);
+    Map<Method, QueryContext<Q,S>> buildQueryContexts(Class<T> persistentClass, Class<? extends Dao> daoClass);
 }

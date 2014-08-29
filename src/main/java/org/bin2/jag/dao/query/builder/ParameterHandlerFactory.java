@@ -11,7 +11,7 @@ import java.lang.reflect.Method;
  *
  * @param <T> the type of the annotation this factory manage
  * @author broger
- * @see StandardQueryContextBuilder
+ * @see org.bin2.jag.dao.query.hibernate.builder.HibernateQueryContextBuilder
  * @see QueryContextBuilder
  */
 public interface ParameterHandlerFactory<T> {

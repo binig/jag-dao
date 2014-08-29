@@ -11,11 +11,11 @@ import org.hibernate.Session;
  * @see org.bin2.jag.dao.DaoProxyHandler
  * @see org.bin2.jag.dao.DaoBeanFactory
  **/
-public interface QueryHandler {
+public interface QueryHandler<Q,S> {
     /**
      * build the query using the session session
-     * @param session the session to be used
+     * @param session the session to be usßed
      * @return the builded query
      **/
-    Query getQuery(Session session);
+    Q getQuery(S session);
 }
