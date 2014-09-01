@@ -1,14 +1,11 @@
-package org.bin2.jag.dao.query.hibernate.sfm;
+package org.bin2.jag.dao.query.sfm;
 
 import junit.framework.Assert;
 import org.bin2.jag.dao.SfmDaoFactory;
-import org.bin2.jag.dao.query.sfm.JdbcInnerBaseDao;
 import org.hsqldb.jdbc.JDBCDriver;
 import org.junit.Test;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
 import java.util.List;
 
 /**

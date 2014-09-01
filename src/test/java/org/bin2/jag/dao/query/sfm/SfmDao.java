@@ -1,4 +1,4 @@
-package org.bin2.jag.dao.query.hibernate.sfm;
+package org.bin2.jag.dao.query.sfm;
 
 import org.bin2.jag.dao.Dao;
 import org.bin2.jag.dao.IndexParameter;

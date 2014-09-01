@@ -1,4 +1,4 @@
-package org.bin2.jag.dao.query.hibernate.sfm;
+package org.bin2.jag.dao.query.sfm;
 
 /**
  * Created by benoitroger on 29/08/14.
