@@ -12,6 +12,7 @@ import org.sfm.jdbc.JdbcMapperFactory;
 import javax.annotation.Nullable;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -27,16 +28,12 @@ public class QueryHandlerFactoryImpl implements QueryHandlerFactory<Query> {
      */
     public QueryHandler build(@Nullable Query annotation, Class<? extends Dao> daoClass, Method method) {
         Preconditions.checkNotNull(annotation);
-        try {
-            return new BasicQueryHandler(annotation.value(), JdbcMapperFactory.newInstance().newMapper(getTargetClass(method)));
-        } catch (NoSuchMethodException e) {
-            throw Throwables.propagate(e);
-        }
+        return new BasicQueryHandler(annotation.value(), JdbcMapperFactory.newInstance().newMapper(getTargetClass(method)));
     }
 
     private Class<?> getTargetClass(Method m) {
         Class<?> returnClass = m.getReturnType();
-        if (List.class.isAssignableFrom(returnClass)) {
+        if (List.class.isAssignableFrom(returnClass)|| Iterator.class.isAssignableFrom(returnClass)) {
             return (Class<?>)((ParameterizedType)m.getGenericReturnType()).getActualTypeArguments()[0];
         } else {
             return returnClass;

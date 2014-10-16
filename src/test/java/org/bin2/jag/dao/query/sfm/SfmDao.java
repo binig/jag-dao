@@ -4,6 +4,7 @@ import org.bin2.jag.dao.Dao;
 import org.bin2.jag.dao.IndexParameter;
 import org.bin2.jag.dao.Query;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -17,4 +18,8 @@ public interface SfmDao extends Dao<MyObject, Long> {
 
     @Query("select id, email, my_property from MyTable ")
     List<MyObject> findAll();
+
+
+    @Query("select id, email, my_property from MyTable ")
+    Iterator<MyObject> iteraiteAll();
 }

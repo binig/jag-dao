@@ -1,17 +1,20 @@
 package org.bin2.jag.dao.query.sfm;
 
+import com.google.common.collect.Lists;
 import junit.framework.Assert;
 import org.bin2.jag.dao.SfmDaoFactory;
 import org.hsqldb.jdbc.JDBCDriver;
-import org.junit.Test;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.testng.annotations.Test;
 
+import java.util.Iterator;
 import java.util.List;
 
 /**
  * Created by benoitroger on 29/08/14.
  */
 public class SfmDaoTest {
+
 
     @Test
     public void test() throws Exception{
@@ -44,6 +47,12 @@ public class SfmDaoTest {
 
         MyObject m = dao.findByEmail("email2");
         Assert.assertEquals(m.getId(),2);
+
+        // find all
+        Iterator<MyObject> it = dao.iteraiteAll();
+        List<MyObject> iterateAll = Lists.newArrayList(it);
+        Assert.assertEquals(iterateAll.size(),2);
+        Assert.assertEquals("email2",iterateAll.get(1).getEmail());
 
 
     }

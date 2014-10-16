@@ -3,8 +3,7 @@ package org.bin2.jag.dao.query.sfm;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import org.bin2.jag.dao.query.ResultHandler;
-import org.hibernate.Query;
-import org.sfm.utils.Handler;
+import org.sfm.utils.RowHandler;
 
 import java.sql.ResultSet;
 import java.util.List;
@@ -22,7 +21,7 @@ public class ListResultHandler<T> implements ResultHandler<JdbcQuery<T>,List<T>>
         ResultSet rs = query.performQuery();
         final List<T> result = Lists.newArrayList();
         try {
-            query.getMapper().forEach(rs, new Handler<T>() {
+            query.getMapper().forEach(rs, new RowHandler<T>() {
                 @Override
                 public void handle(T t) throws Exception {
                     result.add(t);
