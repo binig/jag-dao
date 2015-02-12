@@ -3,7 +3,7 @@
     <groupId>org.bin2.jag-dao</groupId>
     <artifactId>jag-dao</artifactId>
     <packaging>jar</packaging>
-    <version>0.13</version>
+    <version>0.14-SNAPSHOT</version>
     <name>jag-dao</name>
     <url>https://github.com/binig/jag-dao</url>
     <description>
@@ -149,7 +149,7 @@
         <url>https://github.com/binig/jag-dao</url>
         <connection>scm:git:https://github.com/binig/jag-dao.git</connection>
         <developerConnection>scm:git:git@github.com:binig/jag-dao.git</developerConnection>
-      <tag>0.13</tag>
+      <tag>HEAD</tag>
   </scm>
 
     <distributionManagement>
