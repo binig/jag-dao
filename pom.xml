@@ -6,6 +6,10 @@
     <version>0.13-SNAPSHOT</version>
     <name>jag-dao</name>
     <url>https://github.com/binig/jag-dao</url>
+    <description>
+        Simple implementation of the Generic DAO pattern based on Interfaces annotation Spring and Hibernate
+
+    </description>
     <properties>
         <spring.version>3.1.1.RELEASE</spring.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
