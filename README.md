@@ -13,7 +13,7 @@ add this dependency to your project
 <dependency>
   <groupId>org.bin2</groupId>
   <artifactId>jag-dao</artifactId>
-  <version>0.10</version>
+  <version>0.13</version>
   <scope>compile</scope>
 </dependency>
 ```
