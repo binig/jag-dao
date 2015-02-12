@@ -287,7 +287,10 @@
     </profile>
 
     <profile>
-        <id>release</id>
+        <id>signature</id>
+        <activation>
+            <activeByDefault>true</activeByDefault>
+        </activation>
         <build>
 
             <plugins>
